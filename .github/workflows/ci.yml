@@ -40,7 +40,7 @@ jobs:
           path: target/
 
       - name: Set image name as env
-        run: echo "IMAGE_NAME=${{ github.event.inputs.image_name }}" >> $GITHUB_ENV
+        run: echo "IMAGE_NAME=${{ inputs.image_name }}" >> $GITHUB_ENV
 
       - name: Extract version from pom.xml
         id: extract_version
