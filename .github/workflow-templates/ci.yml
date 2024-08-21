@@ -1,0 +1,57 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  maven:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Package
+          path: target/*.jar
+
+  docker:
+    needs: maven
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Package
+          path: target/
+
+      - name: Extract version from pom.xml
+        id: extract_version
+        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}:latest --tag ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push image
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          docker tag ${{ env.IMAGE_NAME }}:latest $IMAGE_ID:latest
+          docker tag ${{ env.IMAGE_NAME }}:${{ env.VERSION }} $IMAGE_ID:${{ env.VERSION }}
+          docker push $IMAGE_ID:latest
+          docker push $IMAGE_ID:${{ env.VERSION }}
