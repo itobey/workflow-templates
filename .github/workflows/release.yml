@@ -1,16 +1,7 @@
 name: Release Workflow
 
 on:
-  workflow_dispatch:
-    inputs:
-      release_version:
-        description: 'Version number for the release'
-        required: true
-        default: '1.0.0'
-      snapshot_version:
-        description: 'Version number for the next snapshot'
-        required: true
-        default: '1.0.1-SNAPSHOT'
+  workflow_call:
 
 jobs:
   build:
