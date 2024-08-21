@@ -31,9 +31,6 @@ jobs:
     needs: maven
     runs-on: ubuntu-latest
 
-    env:
-      IMAGE_NAME: ${{ github.event.inputs.image_name }}
-
     steps:
       - uses: actions/checkout@v4
       - name: Download artifact
@@ -41,6 +38,9 @@ jobs:
         with:
           name: Package
           path: target/
+
+      - name: Set image name as env
+        run: echo "IMAGE_NAME=${{ github.event.inputs.image_name }}" >> $GITHUB_ENV
 
       - name: Extract version from pom.xml
         id: extract_version
