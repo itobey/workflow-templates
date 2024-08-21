@@ -7,10 +7,12 @@ on:
         description: 'Version number for the release'
         required: true
         default: '1.0.0'
+        type: string
       snapshot_version:
         description: 'Version number for the next snapshot'
         required: true
         default: '1.0.1-SNAPSHOT'
+        type: string
 
 jobs:
   build:
