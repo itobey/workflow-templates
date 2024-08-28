@@ -61,6 +61,9 @@ jobs:
           name: Package
           path: target/
 
+      - name: Set image name as env
+        run: echo "IMAGE_NAME=${{ inputs.image_name }}" >> $GITHUB_ENV
+
       - name: Update version in pom.xml to release version
         run: mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
 
