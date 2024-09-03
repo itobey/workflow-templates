@@ -54,9 +54,7 @@ jobs:
 
       - name: Push image
         run: |
-          IMAGE_ID=ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}
+          IMAGE_ID=ghcr.io/${{ github.actor }}/${{ env.IMAGE_NAME }}
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          docker tag ${{ env.IMAGE_NAME }}:latest $IMAGE_ID:latest
           docker tag ${{ env.IMAGE_NAME }}:${{ env.VERSION }} $IMAGE_ID:${{ env.VERSION }}
-          docker push $IMAGE_ID:latest
           docker push $IMAGE_ID:${{ env.VERSION }}
