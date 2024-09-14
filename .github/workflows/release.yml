@@ -71,20 +71,26 @@ jobs:
         id: extract_version
         run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
 
-      - name: Build the Docker image
-        run: docker build . --file docker/Dockerfile --tag ${{ env.IMAGE_NAME }}:latest --tag ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: all
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Push image
+      - name: Build multi-platform Docker image
         run: |
-          IMAGE_ID=ghcr.io/${{ github.actor }}/$IMAGE_NAME
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          docker tag $IMAGE_NAME:latest $IMAGE_ID:latest
-          docker tag $IMAGE_NAME:${{ env.VERSION }} $IMAGE_ID:${{ env.VERSION }}
-          docker push $IMAGE_ID:latest
-          docker push $IMAGE_ID:${{ env.VERSION }}
+          IMAGE_ID=ghcr.io/${{ github.actor }}/${{ env.IMAGE_NAME }}
+          docker buildx build . \
+            --file docker/Dockerfile \
+            --platform linux/amd64,linux/arm64 \
+            --tag $IMAGE_ID:${{ env.VERSION }} \
+            --tag $IMAGE_ID:latest \
+            --push
 
   set-snapshot-version:
     needs: docker
