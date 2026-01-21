@@ -17,6 +17,11 @@ on:
         description: 'Name of the image'
         required: true
         type: string
+      ref:
+        description: 'Git ref (branch, tag, or SHA) to checkout'
+        required: false
+        type: string
+        default: ''
 
 jobs:
   create-tag:
@@ -25,6 +30,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: Create and push tag
         run: |
@@ -40,6 +47,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: Set up Java
         uses: actions/setup-java@v5
@@ -69,6 +78,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: Download artifact
         uses: actions/download-artifact@v4
@@ -114,6 +125,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: Update version in pom.xml to snapshot version
         run: mvn versions:set -DnewVersion=${{ inputs.snapshot_version }}

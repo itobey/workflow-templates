@@ -7,6 +7,11 @@ on:
         description: 'Name of the image'
         required: true
         type: string
+      ref:
+        description: 'Git ref (branch, tag, or SHA) to checkout'
+        required: false
+        type: string
+        default: ''
 
 jobs:
   maven:
@@ -14,6 +19,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
       - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
@@ -33,6 +40,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
