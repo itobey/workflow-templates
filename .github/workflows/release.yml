@@ -63,7 +63,7 @@ jobs:
         run: mvn -B package -Pproduction --file pom.xml
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package
           path: target/*.jar
@@ -82,7 +82,7 @@ jobs:
           ref: ${{ inputs.ref }}
 
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: Package
           path: target/
